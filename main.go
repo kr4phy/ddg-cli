@@ -12,8 +12,8 @@ import (
 
 func main() {
 	cmd := &cli.Command{
-		Name:  "ddg-cli",
-		Usage: "Search DuckDuckGo from the command line",
+		Name:      "ddg-cli",
+		Usage:     "Search DuckDuckGo from the command line",
 		UsageText: "ddg-cli [options] <query>",
 		Flags: []cli.Flag{
 			&cli.IntFlag{
@@ -22,10 +22,10 @@ func main() {
 				Usage: "Limit the number of results",
 			},
 			&cli.BoolFlag{
-				Name: "minimal-output",
+				Name:    "minimal-output",
 				Aliases: []string{"m"},
-				Value: false,
-				Usage: "Only display the title and URL of each result, omitting descriptions",
+				Value:   false,
+				Usage:   "Only display the title and URL of each result, omitting descriptions",
 			},
 		},
 		Action: func(ctx context.Context, c *cli.Command) error {
@@ -51,7 +51,7 @@ func main() {
 				fmt.Println("No results found.")
 				return nil
 			}
-			
+
 			for _, result := range results {
 				fmt.Printf("%d. %s\n", result.Index, result.Title)
 				fmt.Printf("   URL: %s\n", result.URL)

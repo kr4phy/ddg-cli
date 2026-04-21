@@ -2,12 +2,11 @@ package main
 
 import (
 	"fmt"
-	"io"
 	"net/http"
 	"net/url"
 	"strings"
 
-	"github.com/PuerkitoBio/goquery"
+	"golang.org/x/net/html"
 )
 
 type SearchResult struct {
@@ -32,14 +31,101 @@ func extractResultURL(href string) string {
 	if err != nil {
 		return uddg
 	}
-	
+
 	return decodedURL
+}
+
+func hasClass(n *html.Node, className string) bool {
+	for _, attr := range n.Attr {
+		if attr.Key != "class" {
+			continue
+		}
+
+		for _, value := range strings.Fields(attr.Val) {
+			if value == className {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func getAttr(n *html.Node, key string) (string, bool) {
+	for _, attr := range n.Attr {
+		if attr.Key == key {
+			return attr.Val, true
+		}
+	}
+	return "", false
+}
+
+func nodeText(n *html.Node) string {
+	var b strings.Builder
+	var f func(*html.Node)
+	f = func(cur *html.Node) {
+		if cur == nil {
+			return
+		}
+		if cur.Type == html.TextNode {
+			b.WriteString(cur.Data)
+		}
+		for c := cur.FirstChild; c != nil; c = c.NextSibling {
+			f(c)
+		}
+	}
+	f(n)
+	return b.String()
+}
+
+func firstChildElement(n *html.Node, tagName string) *html.Node {
+	for child := n.FirstChild; child != nil; child = child.NextSibling {
+		if child.Type == html.ElementNode && child.Data == tagName {
+			return child
+		}
+	}
+	return nil
+}
+
+func nextSiblingElement(n *html.Node, tagName string) *html.Node {
+	for sibling := n.NextSibling; sibling != nil; sibling = sibling.NextSibling {
+		if sibling.Type == html.ElementNode && sibling.Data == tagName {
+			return sibling
+		}
+	}
+	return nil
+}
+
+func findResultRows(n *html.Node) []*html.Node {
+	var rows []*html.Node
+
+	var f func(*html.Node)
+	f = func(cur *html.Node) {
+		if cur == nil {
+			return
+		}
+
+		if cur.Type == html.ElementNode && cur.Data == "a" && hasClass(cur, "result-link") {
+			row := cur.Parent
+			for row != nil && !(row.Type == html.ElementNode && row.Data == "tr") {
+				row = row.Parent
+			}
+			if row != nil {
+				rows = append(rows, row)
+			}
+		}
+
+		for c := cur.FirstChild; c != nil; c = c.NextSibling {
+			f(c)
+		}
+	}
+
+	f(n)
+	return rows
 }
 
 func ScrapeDuckDuckGo(query string, page int, limit int) ([]SearchResult, error) {
 	userAgent := "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36"
 
-	// Generate the search URL
 	escapedQuery := url.QueryEscape(query)
 	requestURL := fmt.Sprintf("https://lite.duckduckgo.com/lite/?q=%s", escapedQuery)
 
@@ -53,15 +139,9 @@ func ScrapeDuckDuckGo(query string, page int, limit int) ([]SearchResult, error)
 	if err != nil {
 		return nil, err
 	}
-	
 	defer resp.Body.Close()
 
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	doc, err := goquery.NewDocumentFromReader(strings.NewReader(string(body)))
+	doc, err := html.Parse(resp.Body)
 	if err != nil {
 		return nil, err
 	}
@@ -69,30 +149,50 @@ func ScrapeDuckDuckGo(query string, page int, limit int) ([]SearchResult, error)
 	var results []SearchResult
 	index := 1
 
-	doc.Find("a.result-link").Each(func(i int, s *goquery.Selection) {
+	for _, row := range findResultRows(doc) {
 		if len(results) >= limit {
-			return
+			break
 		}
 
-		title := strings.TrimSpace(s.Text())
-		href, _ := s.Attr("href")
+		leftCell := firstChildElement(row, "td")
+		if leftCell == nil {
+			continue
+		}
+
+		linkContainer := nextSiblingElement(leftCell, "td")
+		if linkContainer == nil {
+			continue
+		}
+
+		link := firstChildElement(linkContainer, "a")
+		if link == nil || !hasClass(link, "result-link") {
+			continue
+		}
+
+		title := strings.TrimSpace(nodeText(link))
+		href, _ := getAttr(link, "href")
 		actualURL := extractResultURL(href)
-		
-		description := ""
-		parent := s.Parent().Parent()
-		parent.NextFiltered("tr").Find("td.result-snippet").Each(func(i int, s *goquery.Selection) {
-			description = strings.TrimSpace(s.Text())
-		})
 
-		result := SearchResult{
-			Index: index,
-			Title: title,
-			URL: actualURL,
-			Description: description,
+		description := ""
+		snippetRow := nextSiblingElement(row, "tr")
+		if snippetRow != nil {
+			snippetLeft := firstChildElement(snippetRow, "td")
+			if snippetLeft != nil {
+				snippetCell := nextSiblingElement(snippetLeft, "td")
+				if snippetCell != nil && hasClass(snippetCell, "result-snippet") {
+					description = strings.TrimSpace(nodeText(snippetCell))
+				}
+			}
 		}
-		results = append(results, result)
+
+		results = append(results, SearchResult{
+			Index:       index,
+			Title:       title,
+			URL:         actualURL,
+			Description: description,
+		})
 		index++
-	})
+	}
 
 	return results, nil
 }
