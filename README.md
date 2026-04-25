@@ -12,6 +12,7 @@ Get DuckDuckGo search results quickly from your terminal.
 - Filter by region with `-region` (`-kl`).
 - Control safe search with `-safe-search` (`-kp`).
 - Output results as JSON with `-json` (`-j`).
+- Print version information with `-version` (`-v`).
 - Keep dependencies minimal (Go standard library + `golang.org/x/net/html`).
 
 ## Requirements
@@ -94,8 +95,10 @@ Examples:
 | `-region` | `-kl` | Set DuckDuckGo region | `wt-wt` |
 | `-safe-search` | `-kp` | Safe search level (`1` on, `-1` moderate, `-2` off) | `-1` |
 | `-json` | `-j` | Output search results as JSON | `false` |
+| `-version` | `-v` | Print version information and exit | `false` |
 
 Run `./ddg-cli -h` to see the latest built-in help output.
+Version output uses Go build information and may show `devel` when built from a local checkout.
 
 If no query is provided, the program prints usage and exits.
 If no results are found, it prints `No results found.`

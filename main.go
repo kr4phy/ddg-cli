@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"runtime/debug"
 	"strings"
 )
 
@@ -16,6 +17,7 @@ func main() {
 		region        string
 		safeSearch    int
 		jsonOutput    bool
+		showVersion   bool
 	)
 
 	flag.IntVar(&limit, "limit", 10, "Limit the number of results")
@@ -28,6 +30,8 @@ func main() {
 	flag.IntVar(&safeSearch, "kp", -1, "Alias for --safe-search")
 	flag.BoolVar(&jsonOutput, "json", false, "Output results as JSON")
 	flag.BoolVar(&jsonOutput, "j", false, "Alias for --json")
+	flag.BoolVar(&showVersion, "version", false, "Print version information and exit")
+	flag.BoolVar(&showVersion, "v", false, "Alias for --version")
 
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "ddg-cli: search DuckDuckGo from your terminal\n\n")
@@ -46,6 +50,15 @@ func main() {
 	}
 
 	flag.Parse()
+
+	if showVersion {
+		version := "unknown"
+		if info, ok := debug.ReadBuildInfo(); ok {
+			version = info.Main.Version
+		}
+		fmt.Println("ddg-cli version", version)
+		return
+	}
 
 	if limit < 1 {
 		log.Fatal("limit must be a positive integer")
