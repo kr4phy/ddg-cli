@@ -17,9 +17,9 @@ type SearchResult struct {
 }
 
 type MinimalSearchResult struct {
-	Index	int
-	Title	string
-	URL		string
+	Index int
+	Title string
+	URL   string
 }
 
 func extractResultURL(href string) string {
