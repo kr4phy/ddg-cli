@@ -16,6 +16,12 @@ type SearchResult struct {
 	Description string
 }
 
+type MinimalSearchResult struct {
+	Index	int
+	Title	string
+	URL		string
+}
+
 func extractResultURL(href string) string {
 	u, err := url.Parse("https:" + href)
 	if err != nil {

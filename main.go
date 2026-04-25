@@ -72,31 +72,65 @@ func main() {
 
 	query := strings.TrimSpace(strings.Join(args, " "))
 
-	results, err := ScrapeDuckDuckGo(query, 1, limit, region, safeSearch)
+	fullResults, err := ScrapeDuckDuckGo(query, 1, limit, region, safeSearch)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	if len(results) == 0 {
+	if len(fullResults) == 0 {
 		fmt.Println("No results found.")
 		return
 	}
 
+	var minimalResults []MinimalSearchResult
+
+	if minimalOutput {
+		minimalResults = make([]MinimalSearchResult, len(fullResults))
+		for i, r := range fullResults {
+			minimalResults[i] = MinimalSearchResult{
+				Index: r.Index,
+				Title: r.Title,
+				URL:   r.URL,
+			}
+		}
+	}
+
 	if jsonOutput {
-		jsonData, err := json.MarshalIndent(results, "", "  ")
+		if minimalOutput {
+			jsonData, err := json.MarshalIndent(minimalResults, "", "  ")
+			if err != nil {
+				log.Fatal("Error encoding results to JSON:", err)
+			}
+
+			fmt.Println(string(jsonData))
+			return
+		}
+
+		jsonData, err := json.MarshalIndent(fullResults, "", "  ")
 		if err != nil {
 			log.Fatal("Error encoding results to JSON:", err)
 		}
+
 		fmt.Println(string(jsonData))
 		return
 	} else {
-		for _, result := range results {
+		if minimalOutput {
+			for _, result := range minimalResults {
+				fmt.Printf("%d.\t%s\n", result.Index, result.Title)
+				fmt.Printf("\tURL: %s\n", result.URL)
+				fmt.Println()
+			}
+			return
+		}
+
+		for _, result := range fullResults {
 			fmt.Printf("%d.\t%s\n", result.Index, result.Title)
 			fmt.Printf("\tURL: %s\n", result.URL)
-			if !minimalOutput && result.Description != "" {
+			if result.Description != "" {
 				fmt.Printf("\tDescription: %s\n", result.Description)
 			}
 			fmt.Println()
 		}
+		return
 	}
 }
