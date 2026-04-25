@@ -15,6 +15,12 @@ Get DuckDuckGo search results quickly from your terminal.
 - Print version information with `-version` (`-v`).
 - Keep dependencies minimal (Go standard library + `golang.org/x/net/html`).
 
+## Planned Features
+
+- TUI support: A text-based UI to browse results without re-running the command.
+- Result cache: Use file based cache for faster response.
+- Formatted and colored output: Improved terminal table layouts and color support for better readability.
+
 ## Requirements
 
 - Go 1.26.2 or later
