@@ -92,6 +92,8 @@ Examples:
 ./ddg-cli -region us-en -safe-search 1 github actions
 ```
 
+Note: If you are still not receiving search results, try visiting [lite.duckduckgo.com/lite](https://lite.duckduckgo.com/lite) or [html.duckduckgo.com/html](https://html.duckduckgo.com/html) with your browser. Captcha may be the cause. This tool cannot solve captchas. :(
+
 ## Options
 
 | Option | Alias | Description | Default |
