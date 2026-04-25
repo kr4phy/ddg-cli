@@ -123,11 +123,11 @@ func findResultRows(n *html.Node) []*html.Node {
 	return rows
 }
 
-func ScrapeDuckDuckGo(query string, page int, limit int) ([]SearchResult, error) {
+func ScrapeDuckDuckGo(query string, page int, limit int, region string, safeSearch int) ([]SearchResult, error) {
 	userAgent := "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36"
 
 	escapedQuery := url.QueryEscape(query)
-	requestURL := fmt.Sprintf("https://lite.duckduckgo.com/lite/?q=%s", escapedQuery)
+	requestURL := fmt.Sprintf("https://lite.duckduckgo.com/lite/?q=%s&kl=%s&kp=%d", escapedQuery, region, safeSearch)
 
 	req, err := http.NewRequest("GET", requestURL, nil)
 	if err != nil {
