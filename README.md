@@ -148,7 +148,7 @@ The table below is a raw comparison measured with `/usr/bin/time -v`.
 | Exit status | 0 | 0 | Both Success |
 
 `ddg-cli` uses the DuckDuckGo Lite endpoint instead of the full HTML endpoint.
-The project also keeps dependencies small by using only the standard library plus `golang.org/x/net/html`.
+The project also keeps dependencies small by using only the standard library plus `golang.org/x/net/html` and all releases compiled with flag `-ldflags "-w -s"` for smaller output binary.
 
 Benchmark note: These are single-run measurements and can vary by network, cache state, machine load, and DuckDuckGo response time.
 
