@@ -7,7 +7,7 @@ Get DuckDuckGo search results quickly from your terminal.
 ## Features
 
 - Search DuckDuckGo with query syntax similar to the website.
-- Limit result count with `-limit`.
+- Limit result count with `-limit` (`-l`).
 - Toggle concise output with `-minimal-output` (`-m`).
 - Filter by region with `-region` (`-kl`).
 - Control safe search with `-safe-search` (`-kp`).
@@ -89,7 +89,7 @@ Examples:
 
 | Option | Alias | Description | Default |
 | --- | --- | --- | --- |
-| `-limit` | - | Limit the number of results | `10` |
+| `-limit` | `-l` | Limit the number of results | `10` |
 | `-minimal-output` | `-m` | Show only title and URL | `false` |
 | `-region` | `-kl` | Set DuckDuckGo region | `wt-wt` |
 | `-safe-search` | `-kp` | Safe search level (`1` on, `-1` moderate, `-2` off) | `-1` |
@@ -120,23 +120,23 @@ The table below is a raw comparison measured with `/usr/bin/time -v`.
 
 | Metric | ddgr (v2.2) | ddg-cli | Improvement / Difference |
 | --- | --- | --- | --- |
-| Command being timed | "../../ddgr-2.2/ddgr --np github" | "./ddg-cli github" | - |
-| User time (seconds) | 0.24 | 0.03 | ddg-cli is ~8.0x faster |
-| System time (seconds) | 0.04 | 0.02 | ddg-cli uses 50% less system time |
-| Percent of CPU this job got | 20% | 5% | ddg-cli uses 75% less CPU |
-| Elapsed (wall clock) time (h:mm:ss or m:ss) | 0:01.43 | 0:01.02 | ddg-cli is 0.41s faster |
+| Command being timed | "ddgr --np github" | "ddg-cli github" | - |
+| User time (seconds) | 0.18 | 0.02 | ddg-cli is ~9.0x faster |
+| System time (seconds) | 0.06 | 0.01 | ddg-cli uses ~83% less system time |
+| Percent of CPU this job got | 16% | 3% | ddg-cli uses ~81% less CPU |
+| Elapsed (wall clock) time (h:mm:ss or m:ss) | 0:01.52 | 0:01.08 | ddg-cli is 0.44s faster |
 | Average shared text size (kbytes) | 0 | 0 | Identical |
 | Average unshared data size (kbytes) | 0 | 0 | Identical |
 | Average stack size (kbytes) | 0 | 0 | Identical |
 | Average total size (kbytes) | 0 | 0 | Identical |
-| Maximum resident set size (kbytes) | 32524 | 13076 | ddg-cli uses ~60% less RAM |
+| Maximum resident set size (kbytes) | 32016 | 12640 | ddg-cli uses ~61% less RAM |
 | Average resident set size (kbytes) | 0 | 0 | Identical |
-| Major (requiring I/O) page faults | 39 | 89 | ddgr requires less I/O |
-| Minor (reclaiming a frame) page faults | 5418 | 1819 | ddg-cli has ~66% fewer memory reclaims |
-| Voluntary context switches | 141 | 730 | ddgr switches less frequently |
-| Involuntary context switches | 126 | 40 | ddg-cli has ~68% fewer forced switches |
+| Major (requiring I/O) page faults | 161 | 88 | ddg-cli has ~45% fewer major page faults |
+| Minor (reclaiming a frame) page faults | 5390 | 1693 | ddg-cli has ~69% fewer memory reclaims |
+| Voluntary context switches | 462 | 481 | ddgr switches slightly less frequently |
+| Involuntary context switches | 68 | 40 | ddg-cli has ~41% fewer forced switches |
 | Swaps | 0 | 0 | None |
-| File system inputs | 10820 | 15064 | ddg-cli reads ~39% more data |
+| File system inputs | 39016 | 13400 | ddg-cli reads ~66% less data |
 | File system outputs | 0 | 0 | None |
 | Socket messages sent | 0 | 0 | None |
 | Socket messages received | 0 | 0 | None |
