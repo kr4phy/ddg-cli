@@ -1,4 +1,4 @@
-module ddg-cli
+module github.com/kr4phy/ddg-cli
 
 go 1.26.2
 

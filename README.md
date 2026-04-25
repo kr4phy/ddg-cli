@@ -20,6 +20,20 @@ Get DuckDuckGo search results quickly from your terminal.
 
 ## Installation
 
+### Option A: Download from releases
+
+Download the latest archive for your platform from [releases](https://github.com/kr4phy/ddg-cli/releases/latest), then extract and run it.
+
+### Option B: Install using go
+
+Use `go install` to install the binary:
+
+```bash
+go install github.com/kr4phy/ddg-cli@latest
+```
+
+### Option C: Build from source
+
 Clone this repository:
 
 ```bash
@@ -101,7 +115,7 @@ JSON output (`-json`) returns an array of objects with:
 
 ## Optimizations
 
-Compared with `ddgr`, this Go implementation shows lower user/system CPU time and lower peak memory in this test.
+Compared with `ddgr`, this Go implementation shows lower user/system CPU time and lower peak memory in this test, while some I/O-related metrics may vary depending on the run.
 The table below is a raw comparison measured with `/usr/bin/time -v`.
 
 | Metric | ddgr (v2.2) | ddg-cli | Improvement / Difference |
