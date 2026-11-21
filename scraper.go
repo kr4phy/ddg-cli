@@ -1,4 +1,5 @@
-package main
+// Package ddglib provides web search functionality using DuckDuckGo.
+package ddglib
 
 import (
 	"fmt"
