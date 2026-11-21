@@ -8,6 +8,8 @@ import (
 	"os"
 	"runtime/debug"
 	"strings"
+
+	ddgcli "github.com/kr4phy/ddg-cli"
 )
 
 func main() {
@@ -72,7 +74,7 @@ func main() {
 
 	query := strings.TrimSpace(strings.Join(args, " "))
 
-	fullResults, err := ScrapeDuckDuckGo(query, 1, limit, region, safeSearch)
+	fullResults, err := ddgcli.ScrapeDuckDuckGo(query, 1, limit, region, safeSearch)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -82,12 +84,12 @@ func main() {
 		return
 	}
 
-	var minimalResults []MinimalSearchResult
+	var minimalResults []ddgcli.MinimalSearchResult
 
 	if minimalOutput {
-		minimalResults = make([]MinimalSearchResult, len(fullResults))
+		minimalResults = make([]ddgcli.MinimalSearchResult, len(fullResults))
 		for i, r := range fullResults {
-			minimalResults[i] = MinimalSearchResult{
+			minimalResults[i] = ddgcli.MinimalSearchResult{
 				Index: r.Index,
 				Title: r.Title,
 				URL:   r.URL,
